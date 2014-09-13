@@ -14,9 +14,9 @@ public class ProxyCommon
 	
 	public void preInit()
 	{
-        ChunkPurge.log = Logger.getLogger(ChunkPurge.MODID);		
-        ChunkPurge.log.setParent(FMLLog.getLogger());
-        ChunkPurge.log.setUseParentHandlers(true);        
+		ChunkPurge.log = Logger.getLogger(ChunkPurge.MODID);		
+		ChunkPurge.log.setParent(FMLLog.getLogger());
+		ChunkPurge.log.setUseParentHandlers(true);        
 	}
 	
 	public void load()

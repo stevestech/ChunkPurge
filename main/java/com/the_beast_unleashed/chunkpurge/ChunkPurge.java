@@ -24,7 +24,7 @@ public class ChunkPurge
     @Instance(MODID)
     public static ChunkPurge instance;
     
-    public static Logger log = Logger.getLogger(MODID);
+    public static Logger log;
     
     @SidedProxy(clientSide = "com.the_beast_unleashed.chunkpurge.proxy.ProxyClient", serverSide = "com.the_beast_unleashed.chunkpurge.proxy.ProxyCommon")
     public static ProxyCommon proxy;

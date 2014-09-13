@@ -13,7 +13,6 @@ import cpw.mods.fml.common.TickType;
 
 public class ScheduledTickHandler implements IScheduledTickHandler
 {
-	
 
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData)
