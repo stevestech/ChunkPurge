@@ -122,10 +122,10 @@ public class WorldChunkUnloader
 				+ " chunks for unload in dimension " + this.world.provider.getDimensionName()
 				+ " (" + String.valueOf(this.world.provider.dimensionId) + ")");
 		
-		for (ChunkCoordIntPair coord : chunksToUnload)
+		if (this.world.getChunkProvider() instanceof ChunkProviderServer)
 		{
-			
-			if (this.world.getChunkProvider() instanceof ChunkProviderServer)
+		
+			for (ChunkCoordIntPair coord : chunksToUnload)
 			{
 				
 				((ChunkProviderServer) this.world.getChunkProvider()).unloadChunksIfNotNearSpawn(coord.chunkXPos, coord.chunkZPos);
