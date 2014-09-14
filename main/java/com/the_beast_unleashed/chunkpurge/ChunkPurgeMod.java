@@ -13,16 +13,16 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = ChunkPurge.MODID, name = ChunkPurge.NAME, version = ChunkPurge.VERSION)
-public class ChunkPurge
+@Mod(modid = ChunkPurgeMod.MODID, name = ChunkPurgeMod.NAME, version = ChunkPurgeMod.VERSION)
+public class ChunkPurgeMod
 {
 	
     public static final String MODID = "ChunkPurge";
     public static final String NAME = "Chunk Purge";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
     
     @Instance(MODID)
-    public static ChunkPurge instance;
+    public static ChunkPurgeMod instance;
     
     public static Logger log;
     

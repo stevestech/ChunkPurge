@@ -5,7 +5,7 @@ public class ProxyClient
 	
 	public void preInit()
 	{
-
+		
 	}
 	
 	public void load()

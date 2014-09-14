@@ -2,8 +2,8 @@ package com.the_beast_unleashed.chunkpurge.proxy;
 
 import java.util.logging.Logger;
 
-import com.the_beast_unleashed.chunkpurge.ChunkPurge;
-import com.the_beast_unleashed.chunkpurge.events.ScheduledTickHandler;
+import com.the_beast_unleashed.chunkpurge.ChunkPurgeMod;
+import com.the_beast_unleashed.chunkpurge.events.WorldTickHandler;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.registry.TickRegistry;
@@ -14,9 +14,9 @@ public class ProxyCommon
 	
 	public void preInit()
 	{
-		ChunkPurge.log = Logger.getLogger(ChunkPurge.MODID);		
-		ChunkPurge.log.setParent(FMLLog.getLogger());
-		ChunkPurge.log.setUseParentHandlers(true);        
+		ChunkPurgeMod.log = Logger.getLogger(ChunkPurgeMod.MODID);		
+		ChunkPurgeMod.log.setParent(FMLLog.getLogger());
+		ChunkPurgeMod.log.setUseParentHandlers(true);        
 	}
 	
 	public void load()
@@ -26,7 +26,7 @@ public class ProxyCommon
 	
 	public void postInit()
 	{
-		TickRegistry.registerScheduledTickHandler(new ScheduledTickHandler(), Side.SERVER);
+		TickRegistry.registerScheduledTickHandler(new WorldTickHandler(), Side.SERVER);
 	}
 	
 }
