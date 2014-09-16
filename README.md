@@ -16,7 +16,7 @@ Description
 
 This mod works by periodically scanning the loaded chunks in each world, and identifying those which are isolated from any valid chunk watchers. Those chunks are then scheduled for unloading. Valid chunk watchers are players, chunkloading tickets, and the spawn areas of certain worlds. 
 
-By only attempting to unload groups of chunks, we avoid breaking energy nets and other multi-chunk objects. Partially unloading these can cause significant lag spikes. A flood fill algorithm is used to identify which chunks are unsuitable for unloading.
+By only unloading isolated chunks, we avoid breaking energy nets and other multi-chunk objects. Partially unloading these would cause significant lag spikes. A flood fill algorithm is used to identify which chunks are still linked to chunk watchers, and the remaining chunks are unloaded.
 
 Warning
 =======
