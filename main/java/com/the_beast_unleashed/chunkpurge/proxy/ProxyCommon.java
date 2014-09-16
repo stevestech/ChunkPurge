@@ -4,10 +4,10 @@ import java.util.logging.Logger;
 
 import net.minecraftforge.common.Configuration;
 
-import com.the_beast_unleashed.chunkpurge.ChunkPurgeMod;
-import com.the_beast_unleashed.chunkpurge.commands.ChunkPurgeCommand;
-import com.the_beast_unleashed.chunkpurge.events.WorldTickHandler;
-import com.the_beast_unleashed.chunkpurge.operators.ConfigHandler;
+import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
+import com.the_beast_unleashed.chunkpurge.commands.CommandChunkPurge;
+import com.the_beast_unleashed.chunkpurge.events.HandlerWorldTick;
+import com.the_beast_unleashed.chunkpurge.operators.HandlerConfig;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -23,8 +23,8 @@ public class ProxyCommon
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		
-		ChunkPurgeMod.log = event.getModLog();
-		ChunkPurgeMod.config = new ConfigHandler(event.getSuggestedConfigurationFile());
+		ModChunkPurge.log = event.getModLog();
+		ModChunkPurge.config = new HandlerConfig(event.getSuggestedConfigurationFile());
 		
 	}
 	
@@ -36,14 +36,14 @@ public class ProxyCommon
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		
-		TickRegistry.registerScheduledTickHandler(new WorldTickHandler(), Side.SERVER);
+		TickRegistry.registerScheduledTickHandler(new HandlerWorldTick(), Side.SERVER);
 		
 	}
 	
 	public void serverLoad(FMLServerStartingEvent event)
 	{
 		
-		event.registerServerCommand(new ChunkPurgeCommand());
+		event.registerServerCommand(new CommandChunkPurge());
 		
 	}
 	

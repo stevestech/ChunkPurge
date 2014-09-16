@@ -3,7 +3,7 @@ package com.the_beast_unleashed.chunkpurge.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.the_beast_unleashed.chunkpurge.ChunkPurgeMod;
+import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -13,7 +13,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumChatFormatting;
 
-public class ChunkPurgeCommand implements ICommand
+public class CommandChunkPurge implements ICommand
 {
 	
 	private void sendCommandUsage(ICommandSender icommandsender)
@@ -38,7 +38,7 @@ public class ChunkPurgeCommand implements ICommand
 	@Override
 	public String getCommandName()
 	{
-		return ChunkPurgeMod.config.commandChunkPurge;
+		return ModChunkPurge.config.commandChunkPurge;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ChunkPurgeCommand implements ICommand
 			if (args[0].equalsIgnoreCase("chunkunloaddelay"))
 			{
 				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("chunkUnloadDelay: " + String.valueOf(ChunkPurgeMod.config.chunkUnloadDelay));
+				ChatMessageComponent msg = ChatMessageComponent.createFromText("chunkUnloadDelay: " + String.valueOf(ModChunkPurge.config.chunkUnloadDelay));
 				msg.setColor(EnumChatFormatting.GREEN);
 				icommandsender.sendChatToPlayer(msg);
 				
@@ -74,7 +74,7 @@ public class ChunkPurgeCommand implements ICommand
 			else if (args[0].equalsIgnoreCase("debug"))
 			{
 				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ChunkPurgeMod.config.debug));
+				ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
 				msg.setColor(EnumChatFormatting.GREEN);
 				icommandsender.sendChatToPlayer(msg);
 				
@@ -83,7 +83,7 @@ public class ChunkPurgeCommand implements ICommand
 			else if (args[0].equalsIgnoreCase("enable"))
 			{
 				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ChunkPurgeMod.config.enabled));
+				ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
 				msg.setColor(EnumChatFormatting.GREEN);
 				icommandsender.sendChatToPlayer(msg);
 				
@@ -109,27 +109,27 @@ public class ChunkPurgeCommand implements ICommand
 					if (Integer.valueOf(args[1]) == 0)
 					{
 						
-						ChunkPurgeMod.config.chunkUnloadDelay = 600;
-						ChunkPurgeMod.config.enabled = false;
+						ModChunkPurge.config.chunkUnloadDelay = 600;
+						ModChunkPurge.config.enabled = false;
 						
 						ChatMessageComponent msg = ChatMessageComponent.createFromText("ChunkPurge has been disabled.");
 						msg.setColor(EnumChatFormatting.GREEN);
 						icommandsender.sendChatToPlayer(msg);
 						
-						ChunkPurgeMod.config.saveConfig();
+						ModChunkPurge.config.saveConfig();
 						
 					}
 					
 					else
 					{
 						
-						ChunkPurgeMod.config.chunkUnloadDelay = Integer.valueOf(args[1]);
+						ModChunkPurge.config.chunkUnloadDelay = Integer.valueOf(args[1]);
 						
 						ChatMessageComponent msg = ChatMessageComponent.createFromText("chunkUnloadDelay: " + args[1]);
 						msg.setColor(EnumChatFormatting.GREEN);
 						icommandsender.sendChatToPlayer(msg);
 						
-						ChunkPurgeMod.config.saveConfig();
+						ModChunkPurge.config.saveConfig();
 						
 					}
 					
@@ -152,13 +152,13 @@ public class ChunkPurgeCommand implements ICommand
 				if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("false"))
 				{
 					
-					ChunkPurgeMod.config.debug = Boolean.valueOf(args[1]);
+					ModChunkPurge.config.debug = Boolean.valueOf(args[1]);
 					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ChunkPurgeMod.config.debug));
+					ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
 					msg.setColor(EnumChatFormatting.GREEN);
 					icommandsender.sendChatToPlayer(msg);
 					
-					ChunkPurgeMod.config.saveConfig();
+					ModChunkPurge.config.saveConfig();
 					
 				}
 				
@@ -179,13 +179,13 @@ public class ChunkPurgeCommand implements ICommand
 				if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("false"))
 				{
 					
-					ChunkPurgeMod.config.enabled = Boolean.valueOf(args[1]);
+					ModChunkPurge.config.enabled = Boolean.valueOf(args[1]);
 					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ChunkPurgeMod.config.enabled));
+					ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
 					msg.setColor(EnumChatFormatting.GREEN);
 					icommandsender.sendChatToPlayer(msg);
 					
-					ChunkPurgeMod.config.saveConfig();
+					ModChunkPurge.config.saveConfig();
 					
 				}
 				

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
-import com.the_beast_unleashed.chunkpurge.ChunkPurgeMod;
+import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -14,17 +14,13 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.FakePlayer;
 
 /*
  * A class to handle the unloading of excess chunks from a WorldServer.
  * Excess loaded chunks are those that are currently not within a player's view distance,
  * forced by a chunk loader, or loaded by the world's spawn area.
- * 
- * Calling unloadChunksIfNotNearSpawn will not queue any spawn-loaded chunks for unloading, and
- * unloadQueuedChunks will not unload any chunks that are force-loaded. Therefore we
- * only need to find the set of loaded chunks that are not player-loaded, and pass those
- * to unloadChunksIfNotNearSpawn. 
  */
 public class WorldChunkUnloader
 {
@@ -42,7 +38,9 @@ public class WorldChunkUnloader
 	
 	
 	/*
-	 * A flood fill algorithm to find the shape of the loaded chunks surrounding a player-occupied chunk, or seed. 
+	 * A flood fill algorithm to find the shape of the loaded chunks surrounding a player-occupied chunk, or seed.
+	 * Will not return chunks that are further than radiusLimit from the seed. Set radiusLimit to 0 in order to
+	 * ignore any limit.
 	 * 
 	 * 1. Set Q to the empty queue.
 	 * 2. If the color of node is not equal to target-color, return.
@@ -59,7 +57,7 @@ public class WorldChunkUnloader
 	 * 13. Continue looping until Q is exhausted.
 	 * 14. Return
 	 */
-	private HashSet<ChunkCoordIntPair> groupedChunksFinder(HashSet<ChunkCoordIntPair> loadedChunks, ChunkCoordIntPair seed)
+	private HashSet<ChunkCoordIntPair> groupedChunksFinder(HashSet<ChunkCoordIntPair> loadedChunks, ChunkCoordIntPair seed, int radiusLimit)
 	{
 		
 		LinkedList<ChunkCoordIntPair> queue = new LinkedList<ChunkCoordIntPair>();
@@ -78,11 +76,13 @@ public class WorldChunkUnloader
 				int west, east;
 				
 				for (west = chunk.chunkXPos;
-						loadedChunks.contains(new ChunkCoordIntPair(west-1, chunk.chunkZPos));
+						loadedChunks.contains(new ChunkCoordIntPair(west-1, chunk.chunkZPos))
+								&& (radiusLimit == 0 || Math.abs(west-1 - seed.chunkXPos) <= radiusLimit);
 						--west);
 				
 				for (east = chunk.chunkXPos;
-						loadedChunks.contains(new ChunkCoordIntPair(east+1, chunk.chunkZPos));
+						loadedChunks.contains(new ChunkCoordIntPair(east+1, chunk.chunkZPos))
+								&& (radiusLimit == 0 || Math.abs(east+1 - seed.chunkXPos) <= radiusLimit);
 						++east);
 				
 				for (int x = west; x <= east; ++x)
@@ -90,14 +90,20 @@ public class WorldChunkUnloader
 					
 					groupedChunks.add(new ChunkCoordIntPair(x, chunk.chunkZPos));
 					
-					if (loadedChunks.contains(new ChunkCoordIntPair(x, chunk.chunkZPos+1)))
+					if (loadedChunks.contains(new ChunkCoordIntPair(x, chunk.chunkZPos+1))
+							&& (radiusLimit == 0 || Math.abs(chunk.chunkZPos+1 - seed.chunkZPos) <= radiusLimit))
 					{
+						
 						queue.add(new ChunkCoordIntPair (x, chunk.chunkZPos+1));
+						
 					}
 					
-					if (loadedChunks.contains(new ChunkCoordIntPair(x, chunk.chunkZPos-1)))
+					if (loadedChunks.contains(new ChunkCoordIntPair(x, chunk.chunkZPos-1))
+							&& (radiusLimit == 0 || Math.abs(chunk.chunkZPos-1 - seed.chunkZPos) <= radiusLimit))
 					{
+						
 						queue.add(new ChunkCoordIntPair (x, chunk.chunkZPos-1));
+						
 					}
 					
 				}
@@ -110,11 +116,11 @@ public class WorldChunkUnloader
 	}
 	
 	/*
-	 * Populate chunksToUnload with chunks that are isolated from all players.
+	 * Populate chunksToUnload with chunks that are isolated from all players, chunk loaders, and the spawn.
 	 * 
 	 * Use a flood-fill algorithm to find the set of all loaded chunks in the world which link back
-	 * to a player-occupied chunk through other loaded chunks. The idea is to find the isolated chunks
-	 * which do NOT link back to a player, and unload those. 
+	 * to a chunk watcher through other loaded chunks. The idea is to find the isolated chunks
+	 * which do NOT link back to a valid chunk watcher, and unload those. 
 	 * 
 	 * This is a better alternative to simply unloading all chunks outside of a player's view radius.
 	 * Unloading chunks while not unloading their neighbours would result in tps-spikes due to the breaking
@@ -129,9 +135,33 @@ public class WorldChunkUnloader
 		
 		if (world.getChunkProvider() instanceof ChunkProviderServer)
 		{
+			// The set of chunks that are currently loaded in this world by all mechanisms.
 			HashSet<ChunkCoordIntPair> loadedChunks = new HashSet<ChunkCoordIntPair>();
+			
+			// The set of chunks that are loaded as a result of players.
 			HashSet<ChunkCoordIntPair> playerLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			// The set of chunks that are loaded due to chunk loading tickets.
+			HashSet<ChunkCoordIntPair> forceLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			// The set of chunks that are loaded as a result of the world spawn area.
+			HashSet<ChunkCoordIntPair> spawnLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			
 			List<EntityPlayerMP> listPlayers = world.playerEntities;
+			
+			int radiusLimit;
+			
+			final int CHUNK_WIDTH = 16;
+			
+			// The expected radius of loaded chunks around a player
+			final int PLAYER_RADIUS = MinecraftServer.getServer().getConfigurationManager().getViewDistance();
+			// The expected radius of loaded chunks around a chunk-loading ticket
+			final int TICKET_RADIUS = 1;
+			// The expected radius of loaded chunks around the spawn chunk.
+			final int SPAWN_RADIUS = 8;
+			
+			// Multiply our above expectations by this factor, and prevent the flood filling algorithm from returning
+			// chunks outside of the resulting radius.
+			final double LIMIT_FACTOR = 1.5;
+			
 			
 			// Want to deal with chunk coordinates, not chunk objects.
 			for (Chunk chunk : (List<Chunk>) ((ChunkProviderServer) world.getChunkProvider()).loadedChunks)
@@ -141,6 +171,8 @@ public class WorldChunkUnloader
 				
 			}
 			
+			radiusLimit = (int) Math.ceil(PLAYER_RADIUS * LIMIT_FACTOR);
+			
 			for (EntityPlayerMP player : listPlayers)
 			{
 				
@@ -148,16 +180,40 @@ public class WorldChunkUnloader
 				{
 					
 					ChunkCoordIntPair playerChunkCoords = new ChunkCoordIntPair(player.chunkCoordX, player.chunkCoordZ);
-					playerLoadedChunks.addAll(groupedChunksFinder(loadedChunks, playerChunkCoords));
+					playerLoadedChunks.addAll(groupedChunksFinder(loadedChunks, playerChunkCoords, radiusLimit));
 					
 				}
+				
+			}
+			
+			radiusLimit = (int) Math.ceil(TICKET_RADIUS * LIMIT_FACTOR);
+			
+			for (ChunkCoordIntPair coord : world.getPersistentChunks().keySet())
+			{
+				
+				forceLoadedChunks.addAll(groupedChunksFinder(loadedChunks, coord, radiusLimit));
+				
+			}
+			
+			radiusLimit = (int) Math.ceil(SPAWN_RADIUS * LIMIT_FACTOR);
+			
+			if (world.provider.canRespawnHere() && DimensionManager.shouldLoadSpawn(world.provider.dimensionId))
+			{
+
+				ChunkCoordIntPair spawnChunkCoords = new ChunkCoordIntPair(
+						(int) Math.floor(world.getSpawnPoint().posX / CHUNK_WIDTH),
+						(int) Math.floor(world.getSpawnPoint().posZ / CHUNK_WIDTH));
+				
+				spawnLoadedChunks.addAll(groupedChunksFinder(loadedChunks, spawnChunkCoords, radiusLimit));
 				
 			}
 			
 			for (ChunkCoordIntPair coord : loadedChunks)
 			{
 				
-				if (!playerLoadedChunks.contains(coord))
+				if (!playerLoadedChunks.contains(coord)
+						&& !forceLoadedChunks.contains(coord)
+						&& !spawnLoadedChunks.contains(coord))
 				{
 					
 					chunksToUnload.add(coord);
@@ -171,8 +227,8 @@ public class WorldChunkUnloader
 	}
 	
 	/*
-	 * Analyse the chunks that are currently loaded in this world. Select loaded chunks that are isolated from player-loaded
-	 * chunks, and queue these isolated chunks for unloading.
+	 * Analyse the chunks that are currently loaded in this world. Select loaded chunks that are isolated from any chunk watchers, 
+	 * and queue these isolated chunks for unloading.
 	 */
 	public void unloadChunks()
 	{
@@ -192,10 +248,10 @@ public class WorldChunkUnloader
 			
 		}
 		
-		if (ChunkPurgeMod.config.debug)
+		if (ModChunkPurge.config.debug)
 		{
 			
-			ChunkPurgeMod.log.log(Level.INFO, "Queued " + String.valueOf(chunksToUnload.size())
+			ModChunkPurge.log.log(Level.INFO, "Queued " + String.valueOf(chunksToUnload.size())
 					+ " chunks for unload in dimension " + this.world.provider.getDimensionName()
 					+ " (" + String.valueOf(this.world.provider.dimensionId)
 					+ ") in " + String.valueOf(MinecraftServer.getSystemTimeMillis() - this.initialTime)

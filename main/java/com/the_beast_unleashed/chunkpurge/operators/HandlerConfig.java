@@ -2,12 +2,12 @@ package com.the_beast_unleashed.chunkpurge.operators;
 
 import java.io.File;
 
-import com.the_beast_unleashed.chunkpurge.ChunkPurgeMod;
+import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
 
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 
-public class ConfigHandler
+public class HandlerConfig
 {
 	
 	private Configuration config;
@@ -18,7 +18,7 @@ public class ConfigHandler
 	public boolean enabled;
 	public boolean debug;
 	
-	public ConfigHandler(File configurationFile)
+	public HandlerConfig(File configurationFile)
 	{
 		
 		config = new Configuration(configurationFile);
