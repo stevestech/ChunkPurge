@@ -8,7 +8,7 @@ Download
 
 Not required on the client, although may work in single player.
 
-Minecraft 1.6.4:
+Minecraft 1.6.4:  
 http://the-beast-unleashed.com/files/ChunkPurge-1.6.4-1.2.jar
 
 Description
