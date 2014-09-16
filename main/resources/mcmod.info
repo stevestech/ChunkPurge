@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
+  "modid": "ChunkPurge",
+  "name": "Chunk Purge",
+  "description": "A Minecraft Forge mod to periodically unload chunks from the server. Attempts to recreate the functionality of Cauldron's ChunkGC.",
+  "version": "1.2",
+  "mcversion": "1.6.4",
+  "url": "https://github.com/stevestech/ChunkPurge",
   "updateUrl": "",
-  "authors": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authors": ["stevestech"],
+  "credits": "bloodmc, for saving everyone's butts with the original ChunkGC",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
