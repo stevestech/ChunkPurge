@@ -1,11 +1,9 @@
 package com.the_beast_unleashed.chunkpurge.operators;
 
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+
 import java.io.File;
-
-import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
-
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
 
 public class HandlerConfig
 {

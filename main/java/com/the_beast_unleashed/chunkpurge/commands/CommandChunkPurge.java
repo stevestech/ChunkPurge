@@ -7,10 +7,7 @@ import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 public class CommandChunkPurge implements ICommand
@@ -18,11 +15,8 @@ public class CommandChunkPurge implements ICommand
 	
 	private void sendCommandUsage(ICommandSender icommandsender)
 	{
-		
-		ChatMessageComponent msg = ChatMessageComponent.createFromText(this.getCommandUsage(icommandsender));
-		msg.setColor(EnumChatFormatting.RED);
-		icommandsender.sendChatToPlayer(msg);
-		
+		ChatComponentText msg = new ChatComponentText(EnumChatFormatting.RED + this.getCommandUsage(icommandsender));
+		icommandsender.addChatMessage(msg);
 	}
 
 	public int compareTo(ICommand par1ICommand)
@@ -64,28 +58,25 @@ public class CommandChunkPurge implements ICommand
 			
 			if (args[0].equalsIgnoreCase("chunkunloaddelay"))
 			{
-				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("chunkUnloadDelay: " + String.valueOf(ModChunkPurge.config.chunkUnloadDelay));
-				msg.setColor(EnumChatFormatting.GREEN);
-				icommandsender.sendChatToPlayer(msg);
-				
+
+				ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "chunkUnloadDelay: " + String.valueOf(ModChunkPurge.config.chunkUnloadDelay));
+				icommandsender.addChatMessage(msg);
+
 			}
 			
 			else if (args[0].equalsIgnoreCase("debug"))
 			{
-				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
-				msg.setColor(EnumChatFormatting.GREEN);
-				icommandsender.sendChatToPlayer(msg);
+
+				ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
+				icommandsender.addChatMessage(msg);
 				
 			}
 			
 			else if (args[0].equalsIgnoreCase("enable"))
 			{
-				
-				ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
-				msg.setColor(EnumChatFormatting.GREEN);
-				icommandsender.sendChatToPlayer(msg);
+
+				ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
+				icommandsender.addChatMessage(msg);
 				
 			}
 			
@@ -111,10 +102,9 @@ public class CommandChunkPurge implements ICommand
 						
 						ModChunkPurge.config.chunkUnloadDelay = 600;
 						ModChunkPurge.config.enabled = false;
-						
-						ChatMessageComponent msg = ChatMessageComponent.createFromText("ChunkPurge has been disabled.");
-						msg.setColor(EnumChatFormatting.GREEN);
-						icommandsender.sendChatToPlayer(msg);
+
+						ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "ChunkPurge has been disabled.");
+						icommandsender.addChatMessage(msg);
 						
 						ModChunkPurge.config.saveConfig();
 						
@@ -124,10 +114,9 @@ public class CommandChunkPurge implements ICommand
 					{
 						
 						ModChunkPurge.config.chunkUnloadDelay = Integer.valueOf(args[1]);
-						
-						ChatMessageComponent msg = ChatMessageComponent.createFromText("chunkUnloadDelay: " + args[1]);
-						msg.setColor(EnumChatFormatting.GREEN);
-						icommandsender.sendChatToPlayer(msg);
+
+						ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "chunkUnloadDelay: " + args[1]);
+						icommandsender.addChatMessage(msg);
 						
 						ModChunkPurge.config.saveConfig();
 						
@@ -137,10 +126,9 @@ public class CommandChunkPurge implements ICommand
 				
 				catch (NumberFormatException ex)
 				{
-					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("This does not look like an integer to me: " + args[1]);
-					msg.setColor(EnumChatFormatting.RED);
-					icommandsender.sendChatToPlayer(msg);
+
+					ChatComponentText msg = new ChatComponentText(EnumChatFormatting.RED + "This does not look like an integer to me: " + args[1]);
+					icommandsender.addChatMessage(msg);
 					
 				}
 				
@@ -153,10 +141,9 @@ public class CommandChunkPurge implements ICommand
 				{
 					
 					ModChunkPurge.config.debug = Boolean.valueOf(args[1]);
-					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
-					msg.setColor(EnumChatFormatting.GREEN);
-					icommandsender.sendChatToPlayer(msg);
+
+					ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "Debug mode: " + String.valueOf(ModChunkPurge.config.debug));
+					icommandsender.addChatMessage(msg);
 					
 					ModChunkPurge.config.saveConfig();
 					
@@ -164,10 +151,9 @@ public class CommandChunkPurge implements ICommand
 				
 				else
 				{
-					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("This does not look like true or false to me: " + args[1]);
-					msg.setColor(EnumChatFormatting.RED);
-					icommandsender.sendChatToPlayer(msg);
+
+					ChatComponentText msg = new ChatComponentText(EnumChatFormatting.RED + "This does not look like true or false to me: " + args[1]);
+					icommandsender.addChatMessage(msg);
 					
 				}
 				
@@ -180,10 +166,9 @@ public class CommandChunkPurge implements ICommand
 				{
 					
 					ModChunkPurge.config.enabled = Boolean.valueOf(args[1]);
-					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
-					msg.setColor(EnumChatFormatting.GREEN);
-					icommandsender.sendChatToPlayer(msg);
+
+					ChatComponentText msg = new ChatComponentText(EnumChatFormatting.GREEN + "Enabled: " + String.valueOf(ModChunkPurge.config.enabled));
+					icommandsender.addChatMessage(msg);
 					
 					ModChunkPurge.config.saveConfig();
 					
@@ -191,10 +176,9 @@ public class CommandChunkPurge implements ICommand
 				
 				else
 				{
-					
-					ChatMessageComponent msg = ChatMessageComponent.createFromText("This does not look like true or false to me: " + args[1]);
-					msg.setColor(EnumChatFormatting.RED);
-					icommandsender.sendChatToPlayer(msg);
+
+					ChatComponentText msg = new ChatComponentText(EnumChatFormatting.RED + "This does not look like true or false to me: " + args[1]);
+					icommandsender.addChatMessage(msg);
 					
 				}
 				
