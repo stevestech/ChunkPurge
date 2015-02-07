@@ -1,13 +1,7 @@
 package com.the_beast_unleashed.chunkpurge;
 
-import java.util.logging.Logger;
-
-import net.minecraftforge.common.Property;
-
 import com.the_beast_unleashed.chunkpurge.operators.HandlerConfig;
 import com.the_beast_unleashed.chunkpurge.proxy.ProxyCommon;
-
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -16,7 +10,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
 @Mod(modid = ModChunkPurge.MODID, name = ModChunkPurge.NAME, version = ModChunkPurge.VERSION)
 public class ModChunkPurge
@@ -30,7 +23,7 @@ public class ModChunkPurge
 	public static ModChunkPurge instance;
 
 	public static HandlerConfig config;
-	public static Logger log;
+	public static org.apache.logging.log4j.Logger log;
 
 	@SidedProxy(clientSide = "com.the_beast_unleashed.chunkpurge.proxy.ProxyClient", serverSide = "com.the_beast_unleashed.chunkpurge.proxy.ProxyCommon")
 	public static ProxyCommon proxy;

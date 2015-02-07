@@ -3,19 +3,18 @@ package com.the_beast_unleashed.chunkpurge.operators;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.logging.Level;
 
 import com.the_beast_unleashed.chunkpurge.ModChunkPurge;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.FakePlayer;
+import net.minecraftforge.common.util.FakePlayer;
+import org.apache.logging.log4j.Level;
 
 /*
  * A class to handle the unloading of excess chunks from a WorldServer.
@@ -25,11 +24,11 @@ import net.minecraftforge.common.FakePlayer;
 public class WorldChunkUnloader
 {
 	
-	private WorldServer world;
+	private World world;
 	private HashSet<ChunkCoordIntPair> chunksToUnload;
 	private long initialTime;
 	
-	public WorldChunkUnloader (WorldServer world)
+	public WorldChunkUnloader (World world)
 	{
 		
 		this.world = world;
@@ -60,8 +59,8 @@ public class WorldChunkUnloader
 	private HashSet<ChunkCoordIntPair> groupedChunksFinder(HashSet<ChunkCoordIntPair> loadedChunks, ChunkCoordIntPair seed, int radiusLimit)
 	{
 		
-		LinkedList<ChunkCoordIntPair> queue = new LinkedList<ChunkCoordIntPair>();
-		HashSet<ChunkCoordIntPair> groupedChunks = new HashSet<ChunkCoordIntPair>();
+		LinkedList<ChunkCoordIntPair> queue = new LinkedList<>();
+		HashSet<ChunkCoordIntPair> groupedChunks = new HashSet<>();
 		
 		if (!loadedChunks.contains(seed)) return groupedChunks;
 		queue.add(seed);
@@ -131,19 +130,19 @@ public class WorldChunkUnloader
 	private void populateChunksToUnload()
 	{
 		
-		chunksToUnload = new HashSet<ChunkCoordIntPair>();
+		chunksToUnload = new HashSet<>();
 		
 		if (world.getChunkProvider() instanceof ChunkProviderServer)
 		{
 			// The set of chunks that are currently loaded in this world by all mechanisms.
-			HashSet<ChunkCoordIntPair> loadedChunks = new HashSet<ChunkCoordIntPair>();
+			HashSet<ChunkCoordIntPair> loadedChunks = new HashSet<>();
 			
 			// The set of chunks that are loaded as a result of players.
-			HashSet<ChunkCoordIntPair> playerLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			HashSet<ChunkCoordIntPair> playerLoadedChunks = new HashSet<>();
 			// The set of chunks that are loaded due to chunk loading tickets.
-			HashSet<ChunkCoordIntPair> forceLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			HashSet<ChunkCoordIntPair> forceLoadedChunks = new HashSet<>();
 			// The set of chunks that are loaded as a result of the world spawn area.
-			HashSet<ChunkCoordIntPair> spawnLoadedChunks = new HashSet<ChunkCoordIntPair>();
+			HashSet<ChunkCoordIntPair> spawnLoadedChunks = new HashSet<>();
 			
 			List<EntityPlayerMP> listPlayers = world.playerEntities;
 			
@@ -250,7 +249,7 @@ public class WorldChunkUnloader
 		
 		if (ModChunkPurge.config.debug)
 		{
-			
+
 			ModChunkPurge.log.log(Level.INFO, "Queued " + String.valueOf(chunksToUnload.size())
 					+ " chunks for unload in dimension " + this.world.provider.getDimensionName()
 					+ " (" + String.valueOf(this.world.provider.dimensionId)
